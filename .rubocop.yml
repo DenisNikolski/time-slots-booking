@@ -2,8 +2,18 @@ require:
   - rubocop-rails
   - rubocop-rspec
   - rubocop-performance
+
 AllCops:
   NewCops: enable
+  Exclude:
+    - 'vendor/**/*'
+    - 'spec/fixtures/**/*'
+    - 'tmp/**/*'
+    - 'front-end/**/*'
+    - 'spec/smoke_tests/**/*.rb'
+    - 'bin/**/*'
+    - 'db/schema.rb'
+
 Style/Documentation:
   Enabled: false
 Style/HashSyntax:
