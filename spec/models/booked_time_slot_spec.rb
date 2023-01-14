@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe BookedTimeSlot do
   describe '#by_date' do
-    subject(:model) { described_class.by_date(date) }
+    subject(:model) { described_class.by_datetime(date) }
 
     let(:date) { Date.new(2023, 1, 12) }
     let(:time_slot_day_before1) do

@@ -2,7 +2,7 @@
 
 class BookedTimeSlot < ApplicationRecord
 
-  scope :by_date, lambda { |date|
+  scope :by_datetime, lambda { |date|
     where(start: date.beginning_of_day...date.next.beginning_of_day).order(:start)
   }
 

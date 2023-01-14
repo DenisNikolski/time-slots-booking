@@ -40,7 +40,7 @@ RSpec.describe TimeSlots::Form do
       let(:params) { { requested_date: Date.current - 1.day, booking_duration: 99 } }
       let(:expected_errors) do
         { booking_duration: ['must be a multiple of 15'],
-          requested_date: ['cannot be earlier than the current date'] }
+          requested_date: ['cannot be earlier than the current date in utc'] }
       end
 
       it 'returns errors' do

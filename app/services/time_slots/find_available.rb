@@ -5,7 +5,7 @@ module TimeSlots
 
     prepend SimpleCommand
 
-    def initialize(requested_date: Date.current, booking_duration: 15.minutes, form: Form)
+    def initialize(requested_date: DateTime.current, booking_duration: 15, form: Form)
       @form = form.new.call(requested_date: requested_date, booking_duration: booking_duration)
     end
 
@@ -32,7 +32,7 @@ module TimeSlots
     end
 
     def booked_time_slots
-      @booked_time_slots ||= BookedTimeSlot.by_date(form[:requested_date])
+      @booked_time_slots ||= BookedTimeSlot.by_datetime(booking_datetime)
     end
 
     def available_timeslots
@@ -40,7 +40,11 @@ module TimeSlots
     end
 
     def booking_date
-      @booking_date ||= BookingDate.new(date: form[:requested_date], booking_duration: booking_duration_in_days)
+      @booking_date ||= BookingDate.new(datetime: booking_datetime, booking_duration: booking_duration_in_days)
+    end
+
+    def booking_datetime
+      @booking_datetime ||= form[:requested_date].to_datetime
     end
 
     def booking_duration_in_days

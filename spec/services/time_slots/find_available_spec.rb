@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe TimeSlots::FindAvailable do
   subject(:service) { described_class.new(requested_date: date, booking_duration: booking_duration).call }
 
-  let(:date) { DateTime.new(2023, 11, 1) }
+  let(:date) { Date.new(2023, 11, 1) }
 
   context 'when no booked time slots' do
     context 'when duration is 15 minutes' do

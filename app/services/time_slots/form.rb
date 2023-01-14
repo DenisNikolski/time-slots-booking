@@ -9,7 +9,7 @@ module TimeSlots
     end
 
     rule(:requested_date) do
-      key.failure('cannot be earlier than the current date') if value < Date.current
+      key.failure('cannot be earlier than the current date in utc') if value < Date.current
     end
 
     rule(:booking_duration) do
