@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_11_225436) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_11_230521) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -19,6 +19,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_11_225436) do
     t.datetime "end", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["start", "end"], name: "index_booked_time_slots_on_start_and_end", unique: true
   end
 
 end
