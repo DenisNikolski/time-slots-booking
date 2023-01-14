@@ -1,7 +1,16 @@
 # frozen_string_literal: true
 
-TimeSlot = Data.define(:start, :end) do
-  def covers_booked_time_slot?(booked_time_slot)
-    start < booked_time_slot.end && self.end > booked_time_slot.start
+class TimeSlot
+
+  attr_reader :start, :end
+
+  def initialize(start:, duration:)
+    @start = start
+    @end = start + duration
   end
+
+  def overlaps_with?(time_slot)
+    start < time_slot.end && self.end > time_slot.start
+  end
+
 end

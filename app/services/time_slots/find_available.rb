@@ -3,9 +3,10 @@
 module TimeSlots
   class FindAvailable
 
-    def initialize(duration: 15.minutes.in_days, requested_date: Date.current)
+    def initialize(booking_duration: 15.minutes.in_days, requested_date: Date.current)
+      # TODO: add validation form
       @requested_date = requested_date
-      @duration = duration
+      @booking_duration = booking_duration
     end
 
     def call
@@ -15,20 +16,16 @@ module TimeSlots
 
     private
 
-    attr_reader :requested_date, :duration
+    attr_reader :requested_date, :booking_duration
 
     delegate :first_possible_start, :last_possible_start, :minimum_booking_duration, to: :booking_date
 
     def find_available_time_slots
       first_possible_start.step(last_possible_start, minimum_booking_duration) do |proposed_time_start|
-        proposed_time_end = proposed_time_start + duration
-        proposed_time_slot = TimeSlot.new(start: proposed_time_start, end: proposed_time_end)
+        proposed_time_slot = TimeSlot.new(start: proposed_time_start, duration: booking_duration)
+        next if booked_time_slots.any? { proposed_time_slot.overlaps_with?(_1) }
 
-        covers_existing_time_slot = booked_time_slots.any? do |booked_timeslot|
-          proposed_time_slot.covers_booked_time_slot?(booked_timeslot)
-        end
-
-        available_timeslots << proposed_time_slot unless covers_existing_time_slot
+        available_timeslots << proposed_time_slot
       end
     end
 
@@ -41,7 +38,7 @@ module TimeSlots
     end
 
     def booking_date
-      @booking_date ||= BookingDate.new(date: requested_date, booking_duration: duration)
+      @booking_date ||= BookingDate.new(date: requested_date, booking_duration: booking_duration)
     end
 
   end
