@@ -6,5 +6,6 @@ Rails.application.routes.draw do
 
   namespace :api, defaults: { format: :json } do
     resources :available_time_slots, only: %i[index]
+    resources :booked_time_slots, only: %i[create]
   end
 end
