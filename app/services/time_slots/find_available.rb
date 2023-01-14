@@ -3,27 +3,24 @@
 module TimeSlots
   class FindAvailable
 
-    def initialize(duration: 15.minutes.in_days, date: Date.current)
-      @date = date
+    def initialize(duration: 15.minutes.in_days, requested_date: Date.current)
+      @requested_date = requested_date
       @duration = duration
-      @available_timeslots = []
     end
 
     def call
-      beginning_of_the_day = date.beginning_of_day
-      last_possible_start = date.next.beginning_of_day - duration
-      find_available_timeslots(beginning_of_the_day, last_possible_start)
-
+      find_available_time_slots
       available_timeslots
     end
 
     private
 
-    attr_accessor :available_timeslots
-    attr_reader :date, :duration
+    attr_reader :requested_date, :duration
 
-    def find_available_timeslots(beginning_of_the_day, last_possible_start)
-      beginning_of_the_day.step(last_possible_start, 15.minutes.in_days) do |proposed_time_start|
+    delegate :first_possible_start, :last_possible_start, :minimum_booking_duration, to: :booking_date
+
+    def find_available_time_slots
+      first_possible_start.step(last_possible_start, minimum_booking_duration) do |proposed_time_start|
         proposed_time_end = proposed_time_start + duration
         proposed_time_slot = TimeSlot.new(start: proposed_time_start, end: proposed_time_end)
 
@@ -36,7 +33,15 @@ module TimeSlots
     end
 
     def booked_time_slots
-      @booked_time_slots ||= BookedTimeSlot.by_date(date)
+      @booked_time_slots ||= BookedTimeSlot.by_date(requested_date)
+    end
+
+    def available_timeslots
+      @available_timeslots ||= []
+    end
+
+    def booking_date
+      @booking_date ||= BookingDate.new(date: requested_date, booking_duration: duration)
     end
 
   end

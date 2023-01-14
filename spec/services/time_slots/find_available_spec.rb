@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe TimeSlots::FindAvailable do
-  subject(:instance) { described_class.new(date: date, duration: duration).call }
+  subject(:instance) { described_class.new(requested_date: date, duration: duration).call }
 
   let(:date) { DateTime.new(2023, 11, 1) }
 
