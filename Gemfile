@@ -39,6 +39,7 @@ gem 'bootsnap', require: false
 # gem "rack-cors"
 
 group :development, :test do
+  gem 'factory_bot_rails'
   gem 'pry-byebug'
   gem 'rspec-rails'
   gem 'rubocop-performance', require: false
