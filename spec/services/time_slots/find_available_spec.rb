@@ -89,7 +89,6 @@ RSpec.describe TimeSlots::FindAvailable do
                              ['Wed, 01 Nov 2023 11:30:00 +0000', 'Wed, 01 Nov 2023 11:45:00 +0000'],
                              ['Wed, 01 Nov 2023 11:45:00 +0000', 'Wed, 01 Nov 2023 12:00:00 +0000'],
                              ['Wed, 01 Nov 2023 23:45:00 +0000', 'Thu, 02 Nov 2023 00:00:00 +0000']])
-
       end
 
       it 'returns correct timeslots' do

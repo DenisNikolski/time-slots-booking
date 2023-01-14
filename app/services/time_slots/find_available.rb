@@ -34,5 +34,4 @@ module TimeSlots
     attr_reader :date, :duration
 
   end
-
 end
