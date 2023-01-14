@@ -150,6 +150,8 @@ RSpec.describe TimeSlots::FindAvailable do
   end
 
   def convert_to_datetime(timeslots_strings)
-    timeslots_strings.map { |start_str, end_str| [DateTime.parse(start_str), DateTime.parse(end_str)] }
+    timeslots_strings.map do |start_str, end_str|
+      TimeSlot.new(start: DateTime.parse(start_str), end: DateTime.parse(end_str))
+    end
   end
 end
