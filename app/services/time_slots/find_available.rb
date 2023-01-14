@@ -13,12 +13,12 @@ module TimeSlots
       beginning_of_the_day = date.beginning_of_day
       beginning_of_the_next_day = date.next.beginning_of_day
 
-      booked_timeslots = BookedTimeSlot.where(start: (beginning_of_the_day...beginning_of_the_next_day)).order(:start)
+      booked_time_slots = BookedTimeSlot.by_date(date)
 
       last_possible_start = beginning_of_the_next_day - duration
       beginning_of_the_day.step(last_possible_start, 15.minutes.in_days) do |proposed_time_start|
         proposed_time_end = proposed_time_start + duration
-        covers_existing_timeslot = booked_timeslots.any? do |booked_timeslot|
+        covers_existing_timeslot = booked_time_slots.any? do |booked_timeslot|
           proposed_time_start < booked_timeslot.end && proposed_time_end > booked_timeslot.start
         end
 
