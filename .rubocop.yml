@@ -1,0 +1,20 @@
+require:
+  - rubocop-rails
+  - rubocop-rspec
+  - rubocop-performance
+AllCops:
+  NewCops: enable
+Style/Documentation:
+  Enabled: false
+Style/HashSyntax:
+  EnforcedShorthandSyntax: either
+
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
+    - "config/environments/*"
+Metrics/MethodLength:
+  Exclude:
+    - "spec/**/*"
+Layout/EmptyLinesAroundClassBody:
+  EnforcedStyle: empty_lines
