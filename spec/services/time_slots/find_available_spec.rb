@@ -3,32 +3,35 @@
 require 'rails_helper'
 
 RSpec.describe TimeSlots::FindAvailable do
-  subject(:instance) { described_class.new(requested_date: date, booking_duration: booking_duration).call }
+  subject(:service) { described_class.new(requested_date: date, booking_duration: booking_duration).call }
 
   let(:date) { DateTime.new(2023, 11, 1) }
 
   context 'when no booked time slots' do
     context 'when duration is 15 minutes' do
-      let(:booking_duration) { 15.minutes.in_days }
+      let(:booking_duration) { 15 }
 
       it 'returns all 96 possible slots' do
-        expect(instance.count).to eq(96)
+        expect(service.success?).to be(true)
+        expect(service.result.count).to eq(96)
       end
     end
 
-    context 'when duration is 45 minutes' do
-      let(:booking_duration) { 45.minutes.in_days }
+    context 'when duration is 94 minutes' do
+      let(:booking_duration) { 45 }
 
       it 'returns all 45 possible slots' do
-        expect(instance.count).to eq(94)
+        expect(service.success?).to be(true)
+        expect(service.result.count).to eq(94)
       end
     end
 
     context 'when duration is 2 hours' do
-      let(:booking_duration) { 2.hours.in_days }
+      let(:booking_duration) { 120 }
 
       it 'returns all 89 possible slots' do
-        expect(instance.count).to eq(89)
+        expect(service.success?).to be(true)
+        expect(service.result.count).to eq(89)
       end
     end
   end
@@ -37,20 +40,26 @@ RSpec.describe TimeSlots::FindAvailable do
     before { create(:booked_time_slot, start: date.beginning_of_day, end: date.next.beginning_of_day) }
 
     context 'when duration is 15 minutes' do
-      let(:booking_duration) { 15.minutes.in_days }
+      let(:booking_duration) { 15 }
 
-      it { is_expected.to be_empty }
+      it 'returns no time slots' do
+        expect(service.success?).to be(true)
+        expect(service.result).to be_empty
+      end
     end
 
     context 'when duration is 3h 45 minutes' do
-      let(:booking_duration) { 3.hours.in_days + 45.minutes.in_days }
+      let(:booking_duration) { 225 }
 
-      it { is_expected.to be_empty }
+      it 'returns no time slots' do
+        expect(service.success?).to be(true)
+        expect(service.result).to be_empty
+      end
     end
   end
 
   context 'when no free timeslots for given duration' do
-    let(:booking_duration) { 4.hours.in_days }
+    let(:booking_duration) { 240 }
     let(:first_booking) do
       create(:booked_time_slot, start: date.beginning_of_day + 15.minutes, end: date.beginning_of_day + 45.minutes)
     end
@@ -59,14 +68,17 @@ RSpec.describe TimeSlots::FindAvailable do
       create(:booked_time_slot, start: first_booking.end, end: date.next.beginning_of_day)
     end
 
-    it { is_expected.to be_empty }
+    it 'returns no time slots' do
+      expect(service.success?).to be(true)
+      expect(service.result).to be_empty
+    end
   end
 
   context 'when booked slots are all over the day' do
     before { create_booked_time_slots }
 
     context 'when duration is 15 minutes' do
-      let(:booking_duration) { 15.minutes.in_days }
+      let(:booking_duration) { 15 }
       let(:expected_start_dates) do
         ['Wed, 01 Nov 2023 00:00:00 +0000',
          'Wed, 01 Nov 2023 00:15:00 +0000',
@@ -92,12 +104,13 @@ RSpec.describe TimeSlots::FindAvailable do
       end
 
       it 'returns correct time slots' do
-        expect(instance).to match_array_having_attributes(expected_start_dates, booking_duration)
+        expect(service.success?).to be(true)
+        expect(service.result).to match_array_having_attributes(expected_start_dates, booking_duration)
       end
     end
 
     context 'when duration is 30 minutes' do
-      let(:booking_duration) { 30.minutes.in_days }
+      let(:booking_duration) { 30 }
       let(:expected_start_dates) do
         ['Wed, 01 Nov 2023 00:00:00 +0000',
          'Wed, 01 Nov 2023 00:15:00 +0000',
@@ -117,14 +130,18 @@ RSpec.describe TimeSlots::FindAvailable do
       end
 
       it 'returns correct time slots' do
-        expect(instance).to match_array_having_attributes(expected_start_dates, booking_duration)
+        expect(service.success?).to be(true)
+        expect(service.result).to match_array_having_attributes(expected_start_dates, booking_duration)
       end
     end
 
     context 'when duration is 4 hours' do
-      let(:booking_duration) { 4.hours.in_days }
+      let(:booking_duration) { 240 }
 
-      it { is_expected.to be_empty }
+      it 'returns no time slots' do
+        expect(service.success?).to be(true)
+        expect(service.result).to be_empty
+      end
     end
   end
 
@@ -152,7 +169,7 @@ RSpec.describe TimeSlots::FindAvailable do
   def match_array_having_attributes(time_slots_strings, duration)
     match_array(
       time_slots_strings.map do |start_str|
-        time_slot = TimeSlot.new(start: DateTime.parse(start_str), duration: duration)
+        time_slot = TimeSlot.new(start: DateTime.parse(start_str), duration: duration.minutes)
         have_attributes({ start: time_slot.start, end: time_slot.end })
       end
     )

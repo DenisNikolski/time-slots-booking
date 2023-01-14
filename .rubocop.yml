@@ -21,3 +21,5 @@ Layout/EmptyLinesAroundClassBody:
 
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
+RSpec/MultipleExpectations:
+  Enabled: false
