@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { Button, DatePicker, message, Select, Form } from "antd";
-
+import { Fragment, useState } from "react";
+import axios from "axios";
 import dayjs from "dayjs";
 
-import "antd/dist/reset.css";
+import { Button, DatePicker, message, Select, Form } from "antd";
 
+import "antd/dist/reset.css";
 import "./App.css";
 
 const { Option } = Select;
@@ -20,21 +20,54 @@ const generateDurationOptions = () => {
 const possibleDurationOptions = generateDurationOptions();
 
 const App = () => {
+  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+  const [messageApi, contextHolder] = message.useMessage();
+
   const handleDatePickerChange = (value) => {
-    message.info(`Selected Date: ${value ? value.format(dateFormat) : "None"}`);
+    messageApi.info(
+      `Selected Date: ${value ? value.format(dateFormat) : "None"}`
+    );
   };
 
   const handleDurationSelectChange = (value) => {
-    message.info(`Selected Duration: ${value ? `${value} minutes` : "None"}`);
+    messageApi.info(
+      `Selected Duration: ${value ? `${value} minutes` : "None"}`
+    );
   };
 
   const onFormSubmit = (values) => {
     console.log("Success:", values);
+    getAvailableTimeSlots(values);
+  };
+
+  const getAvailableTimeSlots = async ({ date, duration }) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/available_time_slots`,
+        {
+          params: {
+            date: date.format(dateFormat),
+            booking_duration: duration,
+          },
+        }
+      );
+
+      const timeSlots = response.data;
+      console.log(timeSlots);
+      setAvailableTimeSlots(timeSlots);
+    } catch ({ response }) {
+      const { errors } = response.data;
+      Object.keys(errors).forEach((key) => {
+        messageApi.error(`${key}: ${errors[key]}`);
+      });
+      console.log(errors);
+    }
   };
 
   return (
-    <div className="App">
+    <Fragment className="App">
       <h1>Select desired date and duration</h1>
+      {contextHolder}
       <Form
         labelCol={{
           span: 2,
@@ -71,7 +104,7 @@ const App = () => {
           </Button>
         </Form.Item>
       </Form>
-    </div>
+    </Fragment>
   );
 };
 
