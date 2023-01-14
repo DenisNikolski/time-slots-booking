@@ -4,16 +4,17 @@ module TimeSlots
   class Form < Dry::Validation::Contract
 
     params do
-      required(:requested_date).filled(:date)
-      required(:booking_duration).filled(:integer, gteq?: 15)
+      required(:date).filled(:date)
+      required(:booking_duration).filled(:integer, gteq?: Rails.configuration.x.time_slot.minimum_duration_int)
     end
 
-    rule(:requested_date) do
+    rule(:date) do
       key.failure('cannot be earlier than the current date in utc') if value < Date.current
     end
 
     rule(:booking_duration) do
-      key.failure('must be a multiple of 15') unless (value % 15).zero?
+      minimum_duration = Rails.configuration.x.time_slot.minimum_duration_int
+      key.failure("must be a multiple of #{minimum_duration}") unless (value % minimum_duration).zero?
     end
 
   end

@@ -5,21 +5,25 @@ require 'swagger_helper'
 RSpec.describe 'Index Available Time Slots' do
   path '/api/available_time_slots' do
     get('Available Time Slots') do
-      parameter name: :requested_date, in: :query, type: :date
+      parameter name: :date, in: :query, type: :date
       parameter name: :booking_duration, in: :query, type: :integer
 
       tags 'Available Time Slots'
       produces 'application/json'
 
-      let(:date) { Date.parse('2023-01-12') }
-      before { travel_to(date) }
+      let(:server_date) { Date.parse('2023-01-12') }
+      before { travel_to(server_date) }
 
-      response 200, 'when valid params' do
-        let(:requested_date) { date.to_s }
+      response 200, 'ok - when valid params' do
+        let(:date) { server_date.to_s }
         let(:booking_duration) { 45 }
 
         context 'when no available time slots' do
-          before { create(:booked_time_slot, start: date.beginning_of_day, end: date.next.beginning_of_day) }
+          before do
+            create(:booked_time_slot,
+                   start: server_date.beginning_of_day,
+                   end: server_date.next.beginning_of_day)
+          end
 
           run_test! do |response|
             available_time_slots = JSON.parse(response.body)
@@ -28,7 +32,11 @@ RSpec.describe 'Index Available Time Slots' do
         end
 
         context 'when available time slots exists' do
-          before { create(:booked_time_slot, start: date.beginning_of_day, end: date.beginning_of_day + 2.hours) }
+          before do
+            create(:booked_time_slot,
+                   start: server_date.beginning_of_day,
+                   end: server_date.beginning_of_day + 2.hours)
+          end
 
           run_test! do |response|
             available_time_slots = JSON.parse(response.body)
@@ -37,8 +45,8 @@ RSpec.describe 'Index Available Time Slots' do
         end
       end
 
-      response 422, 'when invalid params' do
-        let(:requested_date) { 'wrong' }
+      response 422, 'Unprocessable Entity - when invalid params' do
+        let(:date) { 'wrong' }
         let(:booking_duration) { 10 }
 
         run_test! do |response|
