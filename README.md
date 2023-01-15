@@ -66,6 +66,10 @@ Command for documentation update
 ```ruby 
 rails rswag
 ```
+## Demo
+
+https://user-images.githubusercontent.com/32555357/212543993-1e568457-6f1a-4d64-91e5-8d58f3bb3a7d.mov
+
 
 ## Possible Improvements
 - Increase api test coverage
