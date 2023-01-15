@@ -48,12 +48,10 @@ const App = () => {
   };
 
   const onSearchFormSubmit = (values) => {
-    console.log("Success:", values);
     getAvailableTimeSlots(values);
   };
 
   const onSelectFormSubmit = (values) => {
-    console.log("Success:", values);
     createBooking(values);
   };
 
@@ -74,12 +72,12 @@ const App = () => {
         },
       });
       const timeSlots = response.data;
-      console.log(timeSlots);
       setAvailableTimeSlots(timeSlots);
     } catch ({ response }) {
+      if (!response) return messageApi.error("server is unavailable");
+
       const { errors } = response.data;
       displayApiErrors(errors);
-      console.log(errors);
     }
   };
 
@@ -90,7 +88,6 @@ const App = () => {
         end: timeSlot.end,
       });
       const responseTimeSlot = response.data;
-      console.log(responseTimeSlot);
       messageApi.success(
         ` Booked time slot: ${formatDateTimeToHours(
           responseTimeSlot.start
@@ -100,7 +97,7 @@ const App = () => {
     } catch ({ response }) {
       const { errors } = response.data;
       displayApiErrors(errors);
-      console.log(errors);
+      document.getElementById("searchFormId").requestSubmit();
     }
   };
 
@@ -111,6 +108,7 @@ const App = () => {
       </Typography>
       {contextHolder}
       <Form
+        id="searchFormId"
         labelCol={{
           span: 2,
         }}
